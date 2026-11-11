@@ -96,12 +96,24 @@ export const skills = [
   { title: 'Robotics & data', items: ['Robotics', 'Data analysis', 'Sensors', 'Automation'] },
 ];
 
-export type Credential = { title: string; issuer: string; image?: string };
+export type Credential = {
+  title: string;
+  issuer: string;
+  image?: string;
+  pdf?: string;
+  period?: string;
+};
 
 export const credentials: Credential[] = [
   { title: 'Machine Learning', issuer: 'National Telecommunication Institute (NTI) & ITIDA', image: '/NTI.jpeg' },
   { title: 'Artificial Intelligence Track', issuer: 'NTI / Huawei Egyptian Talent Academy', image: '/NTI%202.jpeg' },
-  { title: 'Digital Egypt Pioneers Initiative — AI & ML', issuer: 'Ministry of Communications and Information Technology' },
+  {
+    title: 'DEPI — AI & Data Science: Microsoft Machine Learning Engineer',
+    issuer: 'Digital Egypt Pioneers Program · Ministry of Communications and Information Technology, Egypt',
+    period: 'November 2025 – July 2026',
+    image: '/depi-certificate.webp',
+    pdf: '/depi-certificate.pdf',
+  },
   { title: 'Getting Started with Deep Learning', issuer: 'NVIDIA', image: '/nvidia%20.jpeg' },
   { title: 'AI & ML Summer Camp', issuer: 'Sprints × Microsoft', image: '/microsoft.jpeg' },
   { title: 'Building LLM Applications with Prompt Engineering', issuer: 'NVIDIA', image: '/nvidiaLLM.jpeg' },
