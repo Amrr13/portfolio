@@ -96,8 +96,8 @@ export default function ArabicAnalyzer() {
       });
       const { analysis, code, mode } = await response.json();
       if (controller.signal.aborted) return;
-      if (response.status === 422 && code === 'unsupported_sentence') {
-        setMessage('Full analysis is unavailable right now. Try again shortly or explore an example below.');
+      if (code === 'unsupported_sentence' || code === 'analysis_unavailable') {
+        setMessage('Full analysis is currently unavailable. Try a simple sentence or explore an example below.');
         return;
       }
       if (response.status === 429 || response.status === 503 || response.status === 504) {
