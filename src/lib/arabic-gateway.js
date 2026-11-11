@@ -5,15 +5,30 @@ const arabicLetter = /(?=\p{Script=Arabic})\p{Letter}/u;
 let freeUntil = 0;
 let lastDiagnostic = 0;
 
-function reportFailure(stage, status) {
+function reportFailure(stage, upstreamStatus, error) {
+  const diagnostic = { stage };
+  if (Number.isInteger(upstreamStatus) && upstreamStatus >= 100 && upstreamStatus <= 599) {
+    diagnostic.upstreamStatus = upstreamStatus;
+  }
+  for (const key of ['code', 'type']) {
+    const value = error?.[key];
+    if (typeof value === 'string' && /^[a-z0-9_-]{1,64}$/i.test(value)) diagnostic[key] = value;
+  }
   const now = Date.now();
-  if (now - lastDiagnostic < pricingTtl) return;
-  lastDiagnostic = now;
-  console.warn('Arabic analyzer gateway unavailable', { stage, status });
+  if (now - lastDiagnostic >= pricingTtl) {
+    lastDiagnostic = now;
+    console.warn('Arabic analyzer gateway unavailable', diagnostic);
+  }
+  return diagnostic;
 }
 
-async function isFreeModel() {
-  if (Date.now() < freeUntil) return true;
+async function providerFailure(stage, response) {
+  const body = await response.json().catch(() => null);
+  return reportFailure(stage, response.status, body?.error);
+}
+
+async function checkFreeModel() {
+  if (Date.now() < freeUntil) return null;
 
   try {
     const response = await fetch(`${gateway}/models/${model}`, {
@@ -21,10 +36,7 @@ async function isFreeModel() {
       redirect: 'error',
       signal: AbortSignal.timeout(3_000),
     });
-    if (!response.ok) {
-      reportFailure('catalog', response.status);
-      return false;
-    }
+    if (!response.ok) return providerFailure('catalog', response);
     const { id, pricing } = await response.json();
     const isZero = (value) => /^0(?:\.0+)?$/.test(String(value));
     if (
@@ -33,15 +45,13 @@ async function isFreeModel() {
       !isZero(pricing?.output) ||
       !Object.values(pricing).every(isZero)
     ) {
-      reportFailure('pricing');
-      return false;
+      return reportFailure('catalog', response.status, { code: 'nonzero_or_unknown_price' });
     }
 
     freeUntil = Date.now() + pricingTtl;
-    return true;
+    return null;
   } catch {
-    reportFailure('catalog');
-    return false;
+    return reportFailure('catalog');
   }
 }
 
@@ -57,7 +67,9 @@ export function getGatewayToken(request) {
 export async function analyzeWithGateway(text, instruction, token, requestSignal) {
   const words = (text.match(/(?:(?=\p{Script_Extensions=Arabic})[\p{L}\p{M}])+/gu) ?? [])
     .filter((word) => arabicLetter.test(word));
-  if (!words.length || !(await isFreeModel())) return null;
+  if (!words.length) return { diagnostic: reportFailure('output') };
+  const pricingFailure = await checkFreeModel();
+  if (pricingFailure) return { diagnostic: pricingFailure };
 
   const signal = AbortSignal.any([AbortSignal.timeout(16_000), requestSignal]);
   try {
@@ -102,34 +114,31 @@ export async function analyzeWithGateway(text, instruction, token, requestSignal
         },
       }),
     });
-    if (!response.ok) {
-      reportFailure('inference', response.status);
-      return null;
-    }
-    const result = await response.json();
+    if (!response.ok) return { diagnostic: await providerFailure('inference', response) };
+    const result = await response.json().catch(() => null);
     const content = result?.choices?.[0]?.message?.content;
-    if (typeof content !== 'string') {
-      reportFailure('output');
-      return null;
-    }
+    if (typeof content !== 'string') return { diagnostic: reportFailure('output', response.status) };
 
-    const explanations = JSON.parse(content)?.explanations;
+    let explanations;
+    try {
+      explanations = JSON.parse(content)?.explanations;
+    } catch {
+      return { diagnostic: reportFailure('output', response.status) };
+    }
     if (!Array.isArray(explanations) || explanations.length !== words.length) {
-      reportFailure('output');
-      return null;
+      return { diagnostic: reportFailure('output', response.status) };
     }
     const rows = [];
     for (const [index, word] of words.entries()) {
       const explanation = typeof explanations[index] === 'string' ? explanations[index].trim() : '';
       if (explanation.length > 500 || !arabicLetter.test(explanation)) {
-        reportFailure('output');
-        return null;
+        return { diagnostic: reportFailure('output', response.status) };
       }
       rows.push({ word, explanation });
     }
-    return rows;
+    return { analysis: rows };
   } catch {
-    if (!requestSignal.aborted) reportFailure(signal.aborted ? 'timeout' : 'inference');
-    return null;
+    if (requestSignal.aborted) return {};
+    return { diagnostic: reportFailure('inference', undefined, signal.aborted ? { code: 'timeout' } : undefined) };
   }
 }

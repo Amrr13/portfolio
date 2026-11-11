@@ -48,10 +48,10 @@ function json(body, status = 200, headers = {}) {
   });
 }
 
-function basicResponse(text, error, status) {
+function basicResponse(text, error, status, diagnostic) {
   const analysis = analyzeBasicArabic(text);
   if (analysis) return json({ analysis, mode: 'basic' });
-  if (error) return json({ error }, status);
+  if (error) return json({ error, ...(diagnostic && { diagnostic }) }, status);
   return json({
     code: 'unsupported_sentence',
     error: 'This sentence is outside the patterns I can analyze. Try a short sentence like «ذهب أحمد إلى المدرسة».',
@@ -158,9 +158,9 @@ export default {
 
     const gatewayToken = getGatewayToken(request);
     if (gatewayToken && !request.signal.aborted) {
-      const analysis = await analyzeWithGateway(text, systemInstruction, gatewayToken, request.signal);
-      if (analysis) return json({ analysis, mode: 'full' });
-      return basicResponse(text, gemini?.error ?? 'Full analysis is temporarily unavailable. Please try again.', gemini?.status ?? 503);
+      const result = await analyzeWithGateway(text, systemInstruction, gatewayToken, request.signal);
+      if (result.analysis) return json({ analysis: result.analysis, mode: 'full' });
+      return basicResponse(text, gemini?.error ?? 'Full analysis is temporarily unavailable. Please try again.', gemini?.status ?? 503, result.diagnostic);
     }
     return basicResponse(text, gemini?.error, gemini?.status);
   },
