@@ -1,20 +1,13 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Amr Mohamed Taher’s portfolio
 
-# Run and deploy your AI Studio app
+A React and Vite portfolio covering AI engineering, Arabic NLP, and robotics.
 
-This contains everything you need to run your app locally.
+## Develop locally
 
-View your app in AI Studio: https://ai.studio/apps/2431f7fd-adb0-4bb8-b736-9079eb26f21f
+1. Install dependencies with `npm ci`.
+2. Run `npm run dev` and open the URL printed by Vite.
+3. Run `npm run build` to create the production site in `dist/`.
 
-## Run Locally
+Project descriptions, categories, profile age, and credentials are in `src/content.ts`. Certificate images and the profile photo are in `public/`.
 
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+The Vercel build uses Vite and requires no API keys or environment variables.
