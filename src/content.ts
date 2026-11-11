@@ -35,7 +35,7 @@ export const projects: Project[] = [
     title: 'EV3 Competition Robot',
     category: 'Robotics',
     summary: 'A LEGO Mindstorms EV3 robot built for FIRST LEGO League.',
-    detail: 'I developed and programmed an EV3 robot that earned first place in Egypt’s FIRST LEGO League.',
+    detail: 'I developed and programmed an EV3 robot with the team that placed first in the project category at Egypt’s FIRST LEGO League.',
     tags: ['LEGO Mindstorms', 'Robot programming'],
   },
   {
@@ -89,9 +89,9 @@ export const projects: Project[] = [
 ];
 
 export const skills = [
-  { title: 'AI & machine learning', items: ['Machine learning', 'Deep learning', 'Neural networks', 'NLP', 'Computer vision'] },
-  { title: 'Languages & frameworks', items: ['Python', 'C++', 'SQL', 'PyTorch', 'Keras'] },
-  { title: 'Robotics & data', items: ['Robotics', 'Data analysis', 'Sensors', 'Automation'] },
+  { title: 'AI & data', items: ['Machine learning', 'Deep learning', 'Arabic NLP', 'Computer vision', 'Data analysis', 'Mathematical modeling'] },
+  { title: 'Programming & tools', items: ['Python', 'C++', 'HTML', 'CSS', 'Git', 'GitHub', 'SQL', 'PyTorch', 'Keras'] },
+  { title: 'Robotics & collaboration', items: ['LEGO Mindstorms EV3', 'Sensors', 'Automation', 'Team supervision', 'Project management'] },
 ];
 
 export type Credential = {

@@ -1,3 +1,5 @@
+import { analyzeBasicArabic } from '../src/lib/arabic-grammar.js';
+
 const endpoint = 'https://generativelanguage.googleapis.com/v1beta/interactions';
 const model = 'gemini-3.5-flash-lite';
 const maxTextLength = 400;
@@ -41,6 +43,16 @@ function json(body, status = 200, headers = {}) {
     status,
     headers: { 'Cache-Control': 'no-store', ...headers },
   });
+}
+
+function basicResponse(text, error, status) {
+  const analysis = analyzeBasicArabic(text);
+  if (analysis) return json({ analysis, mode: 'basic' });
+  if (error) return json({ error }, status);
+  return json({
+    code: 'unsupported_sentence',
+    error: 'This sentence is outside the patterns I can analyze. Try a short sentence like «ذهب أحمد إلى المدرسة».',
+  }, 422);
 }
 
 function readAnalysis(result) {
@@ -97,9 +109,7 @@ export default {
     }
 
     const key = process.env.GEMINI_API_KEY?.trim();
-    if (!key) {
-      return json({ error: 'Custom analysis is currently unavailable. You can still explore the examples.' }, 503);
-    }
+    if (!key) return basicResponse(text);
 
     const timeout = AbortSignal.timeout(12_000);
     try {
@@ -123,17 +133,17 @@ export default {
       });
 
       if (response.status === 429 || response.status === 503) {
-        return json({ error: 'The analyzer is busy. Please try again shortly.' }, 503);
+        return basicResponse(text, 'The analyzer is busy. Please try again shortly.', 503);
       }
       if (response.ok) {
         const analysis = readAnalysis(await response.json());
-        if (analysis) return json({ analysis });
+        if (analysis) return json({ analysis, mode: 'full' });
       }
     } catch {
       if (timeout.aborted) {
-        return json({ error: 'The analysis took too long. Try again with a shorter sentence.' }, 504);
+        return basicResponse(text, 'The analysis took too long. Try again with a shorter sentence.', 504);
       }
     }
-    return json({ error: 'The analysis could not be completed. Please try again.' }, 502);
+    return basicResponse(text, 'The analysis could not be completed. Please try again.', 502);
   },
 };

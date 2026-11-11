@@ -185,6 +185,11 @@ export default function App() {
   }, [menuOpen]);
 
   useEffect(() => {
+    const target = window.location.hash.slice(1);
+    if (target) document.getElementById(target)?.scrollIntoView();
+  }, []);
+
+  useEffect(() => {
     if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const observer = new IntersectionObserver((entries) => {
       for (const entry of entries) {
@@ -250,7 +255,7 @@ export default function App() {
               <div className="hero-actions hero-enter">
                 <a className="button primary" href="#projects">Explore projects <ArrowDownRight size={19} /></a>
                 <button className="button secondary" type="button" onClick={() => setOverlay({ project: featuredProject })}>
-                  <Sparkles size={18} /> Try the Arabic NLP demo
+                  <Sparkles size={18} /> Try the Arabic analyzer
                 </button>
               </div>
             </div>
@@ -277,16 +282,18 @@ export default function App() {
           <div className="section-top"><h2 id="about-title" data-reveal>About me</h2></div>
           <div className="about-grid">
             <div className="about-story" data-reveal>
-              <p>I’m Amr Mohamed Taher, based in Egypt. I build machine learning tools for Arabic and prototypes that connect software with the physical world.</p>
-              <p>I work with Python, PyTorch, and Keras on natural language processing, computer vision, and data analysis. For robotics and hardware, I use C++ and sensors to build systems that can respond to their surroundings, from a competition robot to an automated irrigation system.</p>
-              <p>I enjoy working through a problem from the first experiment to a working prototype. <a href="#projects">Explore my projects</a> to see how I put those skills to work.</p>
+              <p>I’m Amr Mohamed Taher, an AI engineer and robotics team supervisor based in Egypt.</p>
+              <p>I help product and research teams build prototypes they can test, from Arabic language tools to sensor-based automation. I like seeing how a prototype behaves with real inputs. I built an irrigation system that waters plants based on soil moisture and co-developed e3raab, which shows learners how each word functions in an Arabic sentence.</p>
+              <p>I started by programming EV3 robots. My team placed first in the project category at Egypt’s FIRST LEGO League, and I’ve supervised the SCH Club robotics team at New Mansoura University since November 2024. I scored 99% in NTI’s machine learning training and 98% in the NTI/Huawei AI track.</p>
+              <p>I work with Python, C++, and Git on projects in machine learning, deep learning, Arabic NLP, and robotics. <a href="#contact">Get in touch to discuss your project.</a></p>
             </div>
             <div className="education" id="education" data-reveal>
               <GraduationCap size={26} aria-hidden="true" />
               <p className="eyebrow">Education</p>
               <h3>New Mansoura University</h3>
               <p>Department of Artificial Intelligence Engineering</p>
-              <p>College of Computer Science and Engineering</p>
+              <p>Faculty of Computer Science and Engineering</p>
+              <p className="about-languages">Arabic (native) · English (fluent)</p>
             </div>
           </div>
           <div id="skills" className="skills" data-reveal>

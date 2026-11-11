@@ -30,7 +30,7 @@ const examples = [
 ].map((example) => ({ ...example, text: example.words.map(({ word }) => word).join(' ') }));
 
 type Word = { word: string; explanation: string; role?: string };
-type Result = { words: Word[]; sample: boolean };
+type Result = { words: Word[]; mode: 'sample' | 'basic' | 'full' };
 
 function normalize(text: string) {
   return text.normalize('NFC').replace(/[\p{M}ـ]/gu, '').trim().replace(/[.!?؟]+$/, '').trim().replace(/\s+/g, ' ');
@@ -63,7 +63,7 @@ export default function ArabicAnalyzer() {
 
   function showExample(example: (typeof examples)[number]) {
     reset(example.text);
-    setResult({ words: example.words, sample: true });
+    setResult({ words: example.words, mode: 'sample' });
   }
 
   async function analyze(event: FormEvent<HTMLFormElement>) {
@@ -94,10 +94,15 @@ export default function ArabicAnalyzer() {
         body: JSON.stringify({ text: sentence }),
         signal: controller.signal,
       });
+      const { analysis, code, mode } = await response.json();
+      if (controller.signal.aborted) return;
+      if (response.status === 422 && code === 'unsupported_sentence') {
+        setMessage('This sentence is outside the demo’s grammar coverage. Try a simple sentence such as ذهب أحمد إلى المدرسة.');
+        return;
+      }
       if (!response.ok) throw new Error('Analysis unavailable');
-      const { analysis } = await response.json();
       if (!isAnalysis(analysis)) throw new Error('No analysis returned');
-      if (!controller.signal.aborted) setResult({ words: analysis, sample: false });
+      setResult({ words: analysis, mode: mode === 'basic' ? 'basic' : 'full' });
     } catch {
       if (!controller.signal.aborted) {
         setMessage('Custom text is unavailable right now. You can still try an example below.');
@@ -116,17 +121,19 @@ export default function ArabicAnalyzer() {
         <h3>Try the analyzer</h3>
       </div>
       <form className="analyzer-form" onSubmit={analyze}>
-        <label htmlFor="arabic-sentence">Enter an Arabic sentence</label>
+        <label htmlFor="arabic-sentence">Enter your own Arabic sentence</label>
         <textarea
           id="arabic-sentence"
           lang="ar"
           dir="rtl"
           value={text}
           onChange={(event) => reset(event.target.value)}
-          placeholder="اكتب جملة عربية هنا"
+          placeholder="ذهب أحمد إلى المدرسة"
+          aria-describedby="arabic-sentence-hint"
           maxLength={maxLength}
           rows={2}
         />
+        <p className="analyzer-input-hint" id="arabic-sentence-hint">Start with a short sentence in Modern Standard Arabic.</p>
         <button className="button primary" type="submit" disabled={loading || !text.trim()}>
           {loading && <LoaderCircle className="analyzer-spinner" size={17} aria-hidden="true" />}
           {loading ? 'Analyzing…' : 'Analyze sentence'}
@@ -135,14 +142,14 @@ export default function ArabicAnalyzer() {
       </form>
       <div className="example-options" role="group" aria-label="Try an example sentence">
         {examples.map((example) => (
-          <button key={example.label} type="button" aria-pressed={result?.sample === true && text === example.text} onClick={() => showExample(example)}>
+          <button key={example.label} type="button" aria-pressed={result?.mode === 'sample' && text === example.text} onClick={() => showExample(example)}>
             {example.label}
           </button>
         ))}
       </div>
       {result && selected && (
         <>
-          <p className="example-hint">Select a word to see its grammatical role.</p>
+          <p className="example-hint">{result.mode === 'basic' && <strong>Basic analysis. </strong>}Select a word to see its grammatical role.</p>
           <div className="example-words" lang="ar" dir="rtl">
             {result.words.map(({ word }, index) => (
               <button key={`${index}-${word}`} type="button" aria-pressed={activeWord === index} onClick={() => setActiveWord(index)}>
@@ -150,7 +157,7 @@ export default function ArabicAnalyzer() {
               </button>
             ))}
           </div>
-          <div className="example-result" aria-live="polite" lang={result.sample ? 'en' : 'ar'} dir={result.sample ? 'ltr' : 'rtl'}>
+          <div className="example-result" aria-live="polite" lang={result.mode === 'sample' ? 'en' : 'ar'} dir={result.mode === 'sample' ? 'ltr' : 'rtl'}>
             <div key={activeWord}>{selected.role && <strong>{selected.role}</strong>}<p>{selected.explanation}</p></div>
           </div>
         </>
