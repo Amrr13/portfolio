@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { LoaderCircle, Sparkles } from 'lucide-react';
 
-const maxLength = 400;
+const maxLength = 800;
 const examples = [
   {
     label: 'Read a book',
@@ -97,7 +97,11 @@ export default function ArabicAnalyzer() {
       const { analysis, code, mode } = await response.json();
       if (controller.signal.aborted) return;
       if (response.status === 422 && code === 'unsupported_sentence') {
-        setMessage('This sentence is outside the demo’s grammar coverage. Try a simple sentence such as ذهب أحمد إلى المدرسة.');
+        setMessage('Full analysis is unavailable right now. Try again shortly or explore an example below.');
+        return;
+      }
+      if (response.status === 429 || response.status === 503 || response.status === 504) {
+        setMessage('The analyzer is busy. Wait a moment, then try your sentence again.');
         return;
       }
       if (!response.ok) throw new Error('Analysis unavailable');
@@ -105,7 +109,7 @@ export default function ArabicAnalyzer() {
       setResult({ words: analysis, mode: mode === 'basic' ? 'basic' : 'full' });
     } catch {
       if (!controller.signal.aborted) {
-        setMessage('Custom text is unavailable right now. You can still try an example below.');
+        setMessage('The sentence couldn’t be analyzed. Please try again.');
       }
     } finally {
       if (!controller.signal.aborted) setLoading(false);
@@ -133,12 +137,18 @@ export default function ArabicAnalyzer() {
           maxLength={maxLength}
           rows={2}
         />
-        <p className="analyzer-input-hint" id="arabic-sentence-hint">Start with a short sentence in Modern Standard Arabic.</p>
+        <p className="analyzer-input-hint" id="arabic-sentence-hint">
+          Enter a sentence or short passage in Modern Standard Arabic, up to {maxLength} characters.
+          Text may be sent to a hosted model, so leave out private details.
+        </p>
         <button className="button primary" type="submit" disabled={loading || !text.trim()}>
           {loading && <LoaderCircle className="analyzer-spinner" size={17} aria-hidden="true" />}
           {loading ? 'Analyzing…' : 'Analyze sentence'}
         </button>
-        <p className="analyzer-status" role="status">{message || (loading ? 'Analyzing the sentence.' : '')}</p>
+        <p className="analyzer-status" role="status">{message}</p>
+        <p className="sr-only" aria-live="polite">
+          {loading ? 'Analyzing the sentence.' : result ? `Analysis ready. Select one of the ${result.words.length} words to explore its role.` : ''}
+        </p>
       </form>
       <div className="example-options" role="group" aria-label="Try an example sentence">
         {examples.map((example) => (
