@@ -10,4 +10,4 @@ A React and Vite portfolio covering AI engineering, Arabic NLP, and robotics.
 
 Project descriptions, categories, profile age, and credentials are in `src/content.ts`. Certificate images and the profile photo are in `public/`.
 
-The Vercel build uses Vite and requires no API keys or environment variables.
+The Vercel build uses Vite. To enable custom Arabic sentences in the analyzer, set `GEMINI_API_KEY` in the Vercel project's server environment and redeploy. The built-in examples work independently. Use Vercel's development server to test the server function locally.

@@ -11,18 +11,16 @@ export type Project = {
   summary: string;
   detail: string;
   tags: string[];
-  website?: string;
 };
 
 export const projects: Project[] = [
   {
     id: 'e3raab',
-    title: 'e3raab.com',
+    title: 'Arabic Grammar Analyzer',
     category: 'AI & ML',
     summary: 'An Arabic grammar analyzer that breaks a sentence down word by word.',
     detail: 'Built with a team at New Mansoura University, e3raab uses natural language processing to identify the grammatical roles of words in Arabic text, a practice known as iʿrāb.',
     tags: ['Arabic NLP', 'Machine learning'],
-    website: 'https://e3raab.com/',
   },
   {
     id: 'exam-detector',

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { age, categories, credentials, github, projects, skills } from './content';
 import type { Category, Credential, Project } from './content';
+import ArabicAnalyzer from './ArabicAnalyzer';
 import ProjectVisual from './ProjectVisual';
 
 const navigation = [
@@ -17,70 +18,7 @@ const navigation = [
 
 const skillIcons = [ScanLine, Code2, Cpu];
 
-const arabicExamples = [
-  {
-    label: 'Read a book',
-    words: [
-      { text: 'قَرَأَ', role: 'Verb', explanation: 'A past-tense verb meaning “read.”' },
-      { text: 'الطَّالِبُ', role: 'Subject', explanation: 'The student performs the action.' },
-      { text: 'الكِتَابَ', role: 'Direct object', explanation: 'The book is what the student read.' },
-    ],
-  },
-  {
-    label: 'A clear sky',
-    words: [
-      { text: 'السَّمَاءُ', role: 'Subject', explanation: 'The sky is the topic of this nominal sentence.' },
-      { text: 'صَافِيَةٌ', role: 'Predicate', explanation: 'The word “clear” tells us what the sky is like.' },
-    ],
-  },
-  {
-    label: 'Wrote a letter',
-    words: [
-      { text: 'كَتَبَتْ', role: 'Verb', explanation: 'A past-tense verb meaning “she wrote.”' },
-      { text: 'مَرْيَمُ', role: 'Subject', explanation: 'Maryam is the person who wrote.' },
-      { text: 'رِسَالَةً', role: 'Direct object', explanation: 'The letter is what Maryam wrote.' },
-    ],
-  },
-];
-
 type Overlay = { project: Project } | { credential: Credential };
-
-function ArabicExample() {
-  const [activeExample, setActiveExample] = useState(0);
-  const [activeWord, setActiveWord] = useState(0);
-  const { words } = arabicExamples[activeExample];
-  const { role, explanation } = words[activeWord];
-
-  return (
-    <div className="example">
-      <div className="example-head">
-        <Sparkles size={18} aria-hidden="true" />
-        <h3>Try a sample sentence</h3>
-      </div>
-      <div className="example-options" role="group" aria-label="Choose a sample sentence">
-        {arabicExamples.map(({ label }, index) => (
-          <button key={label} type="button" aria-pressed={activeExample === index} onClick={() => {
-            setActiveExample(index);
-            setActiveWord(0);
-          }}>
-            {label}
-          </button>
-        ))}
-      </div>
-      <p className="example-hint">Select a word to see its grammatical role.</p>
-      <div className="example-words" lang="ar" dir="rtl">
-        {words.map(({ text }, index) => (
-          <button key={text} type="button" aria-pressed={activeWord === index} onClick={() => setActiveWord(index)}>
-            {text}
-          </button>
-        ))}
-      </div>
-      <div className="example-result" aria-live="polite">
-        <div key={`${activeExample}-${activeWord}`}><strong>{role}</strong><p>{explanation}</p></div>
-      </div>
-    </div>
-  );
-}
 
 function DetailDialog({ overlay, onClose }: { overlay: Overlay; onClose: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -123,8 +61,7 @@ function DetailDialog({ overlay, onClose }: { overlay: Overlay; onClose: () => v
           <>
             <p className="detail-description">{project.detail}</p>
             <div className="tags">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
-            {project.id === 'e3raab' && <ArabicExample />}
-            {project.website && <a className="button primary detail-website" href={project.website}>Open live project <ArrowUpRight size={18} /></a>}
+            {project.id === 'e3raab' && <ArabicAnalyzer />}
           </>
         )}
         {credential?.pdf && (
@@ -340,8 +277,9 @@ export default function App() {
           <div className="section-top"><h2 id="about-title" data-reveal>About me</h2></div>
           <div className="about-grid">
             <div className="about-story" data-reveal>
-              <p>I’m Amr, a {age}-year-old AI engineering student in Egypt.</p>
-              <p>My projects range from parsing Arabic sentences to building sensor-based systems for water filtration and irrigation. I work with Python and C++ across software and hardware projects.</p>
+              <p>I’m Amr Mohamed Taher, based in Egypt. I build machine learning tools for Arabic and prototypes that connect software with the physical world.</p>
+              <p>I work with Python, PyTorch, and Keras on natural language processing, computer vision, and data analysis. For robotics and hardware, I use C++ and sensors to build systems that can respond to their surroundings, from a competition robot to an automated irrigation system.</p>
+              <p>I enjoy working through a problem from the first experiment to a working prototype. <a href="#projects">Explore my projects</a> to see how I put those skills to work.</p>
             </div>
             <div className="education" id="education" data-reveal>
               <GraduationCap size={26} aria-hidden="true" />
