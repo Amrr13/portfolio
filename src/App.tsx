@@ -28,9 +28,9 @@ import ProjectVisual from "./ProjectVisual";
 import RoboticsPlayground from "./RoboticsPlayground";
 
 const navigation = [
+  { label: "About", href: "#about" },
   { label: "Work", href: "#projects" },
   { label: "Playground", href: "#playground" },
-  { label: "About", href: "#about" },
   { label: "Credentials", href: "#training" },
 ];
 const skillIcons = [ScanLine, Code2, Cpu];
@@ -434,6 +434,86 @@ export default function App() {
         </section>
 
         <section
+          className="shell section about"
+          id="about"
+          aria-labelledby="about-title"
+        >
+          <div className="about-intro">
+            <p className="section-label">The person behind the projects</p>
+            <h2 id="about-title">
+              Curious by nature.
+              <br />
+              Engineer by practice.
+            </h2>
+          </div>
+          <div className="about-grid">
+            <div className="about-story">
+              <p>
+                I’m Amr Mohamed Taher, an AI engineer and robotics team
+                supervisor based in Egypt.
+              </p>
+              <p>
+                I help product and research teams build prototypes they can
+                test, from Arabic language tools to sensor-based automation. I
+                like seeing how a prototype behaves with real inputs. I built an
+                irrigation system that waters plants based on soil moisture and
+                co-developed e3raab, which shows learners how each word
+                functions in an Arabic sentence.
+              </p>
+              <p>
+                I started by programming EV3 robots. My team placed first in the
+                project category at Egypt’s FIRST LEGO League, and I’ve
+                supervised the SCH Club robotics team at New Mansoura University
+                since November 2024. I scored 99% in NTI’s machine learning
+                training and 98% in the NTI/Huawei AI track.
+              </p>
+              <p>
+                I work with Python, C++, and Git on projects in machine
+                learning, deep learning, Arabic NLP, and robotics.{" "}
+                <a href="#contact">Get in touch to discuss your project.</a>
+              </p>
+            </div>
+            <aside className="about-aside">
+              <div className="achievement">
+                <Award size={26} />
+                <strong>1st place</strong>
+                <span>Project category, Egypt’s FIRST LEGO League</span>
+              </div>
+              <div className="education" id="education">
+                <GraduationCap size={24} />
+                <h3>New Mansoura University</h3>
+                <p>
+                  Artificial Intelligence Engineering
+                  <br />
+                  Faculty of Computer Science and Engineering
+                </p>
+              </div>
+              <p className="about-languages">
+                Arabic, native
+                <br />
+                English, fluent
+              </p>
+            </aside>
+          </div>
+          <div className="skills" id="skills">
+            {skills.map(({ title, items }, index) => {
+              const Icon = skillIcons[index];
+              return (
+                <div className="skill" key={title}>
+                  <Icon size={24} aria-hidden="true" />
+                  <h3>{title}</h3>
+                  <div className="tags">
+                    {items.map((item) => (
+                      <span key={item}>{item}</span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section
           className="shell section work"
           id="projects"
           aria-labelledby="work-title"
@@ -588,86 +668,6 @@ export default function App() {
               </div>
               {lab === "arabic" && <ArabicAnalyzer />}
             </div>
-          </div>
-        </section>
-
-        <section
-          className="shell section about"
-          id="about"
-          aria-labelledby="about-title"
-        >
-          <div className="about-intro">
-            <p className="section-label">The person behind the projects</p>
-            <h2 id="about-title">
-              Curious by nature.
-              <br />
-              Engineer by practice.
-            </h2>
-          </div>
-          <div className="about-grid">
-            <div className="about-story">
-              <p>
-                I’m Amr Mohamed Taher, an AI engineer and robotics team
-                supervisor based in Egypt.
-              </p>
-              <p>
-                I help product and research teams build prototypes they can
-                test, from Arabic language tools to sensor-based automation. I
-                like seeing how a prototype behaves with real inputs. I built an
-                irrigation system that waters plants based on soil moisture and
-                co-developed e3raab, which shows learners how each word
-                functions in an Arabic sentence.
-              </p>
-              <p>
-                I started by programming EV3 robots. My team placed first in the
-                project category at Egypt’s FIRST LEGO League, and I’ve
-                supervised the SCH Club robotics team at New Mansoura University
-                since November 2024. I scored 99% in NTI’s machine learning
-                training and 98% in the NTI/Huawei AI track.
-              </p>
-              <p>
-                I work with Python, C++, and Git on projects in machine
-                learning, deep learning, Arabic NLP, and robotics.{" "}
-                <a href="#contact">Get in touch to discuss your project.</a>
-              </p>
-            </div>
-            <aside className="about-aside">
-              <div className="achievement">
-                <Award size={26} />
-                <strong>1st place</strong>
-                <span>Project category, Egypt’s FIRST LEGO League</span>
-              </div>
-              <div className="education" id="education">
-                <GraduationCap size={24} />
-                <h3>New Mansoura University</h3>
-                <p>
-                  Artificial Intelligence Engineering
-                  <br />
-                  Faculty of Computer Science and Engineering
-                </p>
-              </div>
-              <p className="about-languages">
-                Arabic, native
-                <br />
-                English, fluent
-              </p>
-            </aside>
-          </div>
-          <div className="skills" id="skills">
-            {skills.map(({ title, items }, index) => {
-              const Icon = skillIcons[index];
-              return (
-                <div className="skill" key={title}>
-                  <Icon size={24} aria-hidden="true" />
-                  <h3>{title}</h3>
-                  <div className="tags">
-                    {items.map((item) => (
-                      <span key={item}>{item}</span>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </section>
 

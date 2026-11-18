@@ -331,7 +331,6 @@ h2 {
   height: clamp(300px, 31vw, 419px);
   object-fit: cover;
   object-position: 50% 32%;
-  filter: grayscale(1) contrast(1.025);
   border-radius: 5px;
 }
 .portrait figcaption {
