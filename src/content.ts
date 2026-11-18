@@ -89,9 +89,21 @@ export const projects: Project[] = [
 ];
 
 export const skills = [
-  { title: 'AI & data', items: ['Machine learning', 'Deep learning', 'Arabic NLP', 'Computer vision', 'Data analysis', 'Mathematical modeling'] },
+  {
+    title: 'AI & data',
+    items: [
+      'Machine learning',
+      'Deep learning',
+      'Computer vision',
+      'NLP (Arabic & English)',
+      'Agentic AI',
+      'RAG systems',
+      'Data analysis',
+      'Mathematical modeling',
+    ],
+  },
   { title: 'Programming & tools', items: ['Python', 'C++', 'HTML', 'CSS', 'Git', 'GitHub', 'SQL', 'PyTorch', 'Keras'] },
-  { title: 'Robotics & collaboration', items: ['LEGO Mindstorms EV3', 'Sensors', 'Automation', 'Team supervision', 'Project management'] },
+  { title: 'Robotics & collaboration', items: ['LEGO Mindstorms EV3', 'IoT', 'Sensors', 'Automation', 'Team supervision', 'Project management'] },
 ];
 
 export type Credential = {
