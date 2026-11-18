@@ -10,4 +10,4 @@ A React and Vite portfolio covering AI engineering, Arabic NLP, and robotics.
 
 Project descriptions, categories, profile age, and credentials are in `src/content.ts`. Certificate images and the profile photo are in `public/`.
 
-The Vercel build uses Vite. The Arabic analyzer uses Gemini when `GEMINI_API_KEY` is configured. Otherwise, a verified Vercel account can use Reflection Beam through the project's built-in identity while the zero-price offer is available. It uses basic grammar rules if neither hosted model is available. Use Vercel's development server to test the server function locally.
+The Arabic analyzer uses grammar rules for simple constructions and a bundled UDPipe model to estimate the roles of words in other Modern Standard Arabic sentences. The function analyzes submitted text on the portfolio server and requires no external credentials. Use Vercel's development server on x64 Windows or Linux to test the server function locally. See the [parser and model credits](vendor/udpipe/README.md) for training and license details.

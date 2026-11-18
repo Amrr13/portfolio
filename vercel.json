@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/analyze-arabic.js": {
+      "includeFiles": "vendor/udpipe/{udpipe-linux-x64,arabic-pud.udpipe}"
+    }
+  }
+}

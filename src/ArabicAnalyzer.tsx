@@ -65,7 +65,7 @@ const examples = [
 }));
 
 type Word = { word: string; explanation: string; role?: string };
-type Result = { words: Word[]; mode: "sample" | "basic" | "full" };
+type Result = { words: Word[]; mode: "sample" | "basic" | "estimated" };
 
 function normalize(text: string) {
   return text
@@ -150,14 +150,8 @@ export default function ArabicAnalyzer() {
         body: JSON.stringify({ text: sentence }),
         signal: controller.signal,
       });
-      const { analysis, code, mode } = await response.json();
+      const { analysis, mode } = await response.json();
       if (controller.signal.aborted) return;
-      if (code === "unsupported_sentence" || code === "analysis_unavailable") {
-        setMessage(
-          "Full analysis is currently unavailable. Try a simple sentence or explore an example below.",
-        );
-        return;
-      }
       if (
         response.status === 429 ||
         response.status === 503 ||
@@ -170,7 +164,10 @@ export default function ArabicAnalyzer() {
       }
       if (!response.ok) throw new Error("Analysis unavailable");
       if (!isAnalysis(analysis)) throw new Error("No analysis returned");
-      setResult({ words: analysis, mode: mode === "basic" ? "basic" : "full" });
+      setResult({
+        words: analysis,
+        mode: mode === "basic" ? "basic" : "estimated",
+      });
     } catch {
       if (!controller.signal.aborted) {
         setMessage("The sentence couldn’t be analyzed. Please try again.");
@@ -203,8 +200,7 @@ export default function ArabicAnalyzer() {
         />
         <p className="analyzer-input-hint" id={hintId}>
           Enter a sentence or short passage in Modern Standard Arabic, up to{" "}
-          {maxLength} characters. Text may be sent to a hosted model, so leave
-          out private details.
+          {maxLength} characters.
         </p>
         <button
           className="button primary"
@@ -250,8 +246,8 @@ export default function ArabicAnalyzer() {
       {result && selected && (
         <>
           <p className="example-hint">
-            {result.mode === "basic" && <strong>Basic analysis. </strong>}Select
-            a word to see its grammatical role.
+            {result.mode === "estimated" && <strong>Estimated analysis. </strong>}
+            Select a word to see its grammatical role.
           </p>
           <div className="example-words" lang="ar" dir="rtl">
             {result.words.map(({ word }, index) => (

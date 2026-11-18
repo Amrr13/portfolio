@@ -131,6 +131,21 @@ function nounRow(token, noun, role) {
 }
 
 function prepositionalPhrase(words, predicate) {
+  if (words.length === 1) {
+    const [token] = words;
+    const match = /^(لل|بال|كال)(.+)$/u.exec(token.plain);
+    if (!match) return null;
+    const prefixMarks = token.word.slice(1).match(/^[\u064B-\u0652]+/u)?.[0];
+    const prefixVowel = match[1] === 'كال' ? 'َ' : 'ِ';
+    if (prefixMarks && prefixMarks !== prefixVowel) return null;
+    const complement = { ...token, plain: `ال${match[2]}` };
+    const noun = nounFor(complement, 'preposition');
+    const nounAnalysis = noun && nounRow(complement, noun, 'preposition');
+    if (!nounAnalysis) return null;
+    const particle = { لل: 'اللام', بال: 'الباء', كال: 'الكاف' }[match[1]];
+    const explanation = `${particle} حرف جر، و«${complement.plain}» ${nounAnalysis.explanation}`;
+    return [row(token, predicate ? `${explanation} وشبه الجملة في محل رفع خبر.` : explanation)];
+  }
   if (words.length !== 2) return null;
   const [particle, complement] = words;
   const isPreposition = prepositions.has(particle.plain);
@@ -168,16 +183,16 @@ function verbalPhrase(words, verb, person, explicitSubject) {
   const rows = [row(verbToken, verbExplanation + feminineMarker + (explicitSubject ? '' : ` والفاعل ضمير مستتر تقديره «${implicit[person]}».`))];
   if (!rest.length) return rows;
 
-  if (verb.transitive && (rest.length === 1 || rest.length === 3)) {
-    const object = nounFor(rest[0], 'object');
-    const objectRow = object && nounRow(rest[0], object, 'object');
-    if (!objectRow) return null;
-    if (rest.length === 1) return [...rows, objectRow];
-    const phrase = prepositionalPhrase(rest.slice(1), false);
-    return phrase && [...rows, objectRow, ...phrase];
-  }
   const phrase = prepositionalPhrase(rest, false);
-  return phrase && [...rows, ...phrase];
+  if (phrase) return [...rows, ...phrase];
+  if (!verb.transitive || rest.length > 3) return null;
+
+  const object = nounFor(rest[0], 'object');
+  const objectRow = object && nounRow(rest[0], object, 'object');
+  if (!objectRow) return null;
+  if (rest.length === 1) return [...rows, objectRow];
+  const objectPhrase = prepositionalPhrase(rest.slice(1), false);
+  return objectPhrase && [...rows, objectRow, ...objectPhrase];
 }
 
 export function analyzeBasicArabic(text) {
