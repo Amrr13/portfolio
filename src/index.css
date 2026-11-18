@@ -380,22 +380,23 @@ h2 {
 }
 .hero-bottom {
   grid-column: 1/-1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 18px;
-  padding-block: 20px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px 18px;
+  margin: 0;
+  padding: 20px 0;
+  list-style: none;
   border-block: 1px solid var(--line);
   font: 600 clamp(1rem, 1.6vw, 1.25rem) var(--display);
   letter-spacing: 0.02em;
 }
-.hero-bottom span {
+.hero-bottom li {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 10px;
 }
-.hero-bottom span::before {
-  content: "+";
+.hero-bottom li::before {
+  content: "+" / "";
   color: var(--accent);
   font-family: "DM Sans", sans-serif;
   font-weight: 400;
@@ -1253,10 +1254,8 @@ body:has(dialog[open]) {
     font-size: 0.86rem;
   }
   .hero-bottom {
-    gap: 10px;
-  }
-  .hero-bottom span {
-    gap: 9px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px 14px;
   }
   .section {
     padding-block: 58px;
@@ -1393,14 +1392,10 @@ body:has(dialog[open]) {
     margin-left: auto;
   }
   .hero-bottom {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 12px 24px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 16px;
     font-size: 1.15rem;
     padding-block: 17px;
-  }
-  .hero-bottom span {
-    min-width: calc(50% - 12px);
   }
   .section {
     padding-block: 44px;

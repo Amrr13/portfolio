@@ -33,6 +33,18 @@ const navigation = [
   { label: "Playground", href: "#playground" },
   { label: "Credentials", href: "#training" },
 ];
+const featuredSkills = [
+  "Machine learning",
+  "Deep learning",
+  "Computer vision",
+  "NLP (Arabic & English)",
+  "Data analysis",
+  "Agentic AI",
+  "RAG systems",
+  "Robotics",
+  "IoT",
+  "Automation",
+];
 const skillIcons = [ScanLine, Code2, Cpu];
 type Overlay = { project: Project } | { credential: Credential };
 
@@ -425,12 +437,11 @@ export default function App() {
               </a>
             </div>
           </div>
-          <div className="hero-bottom">
-            <span>Machine learning</span>
-            <span>Arabic NLP</span>
-            <span>Robotics</span>
-            <span>Automation</span>
-          </div>
+          <ul className="hero-bottom" aria-label="Top skills" role="list">
+            {featuredSkills.map((skill) => (
+              <li key={skill}>{skill}</li>
+            ))}
+          </ul>
         </section>
 
         <section
