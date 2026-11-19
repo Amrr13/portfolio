@@ -115,6 +115,11 @@ export type Credential = {
 };
 
 export const credentials: Credential[] = [
+  {
+    title: 'IT Department Summer Training',
+    issuer: 'Gulf Agency Company (GAC)',
+    period: 'Summers 2023, 2024, 2025 & 2026',
+  },
   { title: 'Machine Learning', issuer: 'National Telecommunication Institute (NTI) & ITIDA', image: '/NTI.jpeg' },
   { title: 'Artificial Intelligence Track', issuer: 'NTI / Huawei Egyptian Talent Academy', image: '/NTI%202.jpeg' },
   {

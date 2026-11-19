@@ -1,18 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import {
+  ArrowLeft,
+  ArrowRight,
   Award,
+  Check,
   Code2,
   Cpu,
   FileText,
   Github,
   GraduationCap,
+  Linkedin,
+  Mail,
   Menu,
   Moon,
-  Play,
+  Phone,
   ScanLine,
+  Search,
   Sun,
   X,
-  Check,
 } from "lucide-react";
 import {
   age,
@@ -25,14 +30,16 @@ import {
 import type { Category, Credential, Project } from "./content";
 import ArabicAnalyzer from "./ArabicAnalyzer";
 import ProjectVisual from "./ProjectVisual";
-import RoboticsPlayground from "./RoboticsPlayground";
 
 const navigation = [
   { label: "About", href: "#about" },
   { label: "Work", href: "#projects" },
-  { label: "Playground", href: "#playground" },
   { label: "Credentials", href: "#training" },
 ];
+const linkedIn = "https://www.linkedin.com/in/amr-mohamedd-/";
+const email = "1amrmohamedd@gmail.com";
+const phone = "+201023462890";
+const selectedProjectCount = 4;
 const featuredSkills = [
   "Machine learning",
   "Deep learning",
@@ -47,13 +54,20 @@ const featuredSkills = [
 ];
 const skillIcons = [ScanLine, Code2, Cpu];
 type Overlay = { project: Project } | { credential: Credential };
+type ProjectNavigation = {
+  position: number;
+  count: number;
+  move: (direction: -1 | 1) => void;
+};
 
 function DetailDialog({
   overlay,
   onClose,
+  projectNavigation,
 }: {
   overlay: Overlay;
   onClose: () => void;
+  projectNavigation?: ProjectNavigation;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [imageUnavailable, setImageUnavailable] = useState(false);
@@ -98,9 +112,33 @@ function DetailDialog({
         </button>
       </div>
       <div className="detail-inner">
-        <h2 id="detail-title">{project?.title ?? credential?.title}</h2>
+        {project && projectNavigation && (
+          <nav className="detail-navigation" aria-label="Browse project details">
+            <button
+              className="button secondary"
+              type="button"
+              aria-label="Previous project"
+              onClick={() => projectNavigation.move(-1)}
+            >
+              <ArrowLeft size={16} aria-hidden="true" /> Previous
+            </button>
+            <p className="detail-position" aria-live="polite" aria-atomic="true">
+              {projectNavigation.position} of {projectNavigation.count}
+              <span className="sr-only">, {project.title}</span>
+            </p>
+            <button
+              className="button secondary"
+              type="button"
+              aria-label="Next project"
+              onClick={() => projectNavigation.move(1)}
+            >
+              Next <ArrowRight size={16} aria-hidden="true" />
+            </button>
+          </nav>
+        )}
         {project && (
-          <>
+          <div className="project-detail" key={project.id}>
+            <h2 id="detail-title">{project.title}</h2>
             <p className="detail-description">{project.detail}</p>
             <div className="tags">
               {project.tags.map((tag) => (
@@ -114,10 +152,11 @@ function DetailDialog({
                 <ProjectVisual project={project} />
               </div>
             )}
-          </>
+          </div>
         )}
         {credential && (
           <>
+            <h2 id="detail-title">{credential.title}</h2>
             <p className="detail-description">{credential.issuer}</p>
             {credential.period && (
               <p className="detail-period">{credential.period}</p>
@@ -179,7 +218,7 @@ function ProjectCard({
             ))}
           </div>
           <span className="project-open" aria-hidden="true">
-            {project.id === "e3raab" ? "Try the demo" : "Explore project"}
+            Explore project
             <span>+</span>
           </span>
         </div>
@@ -231,6 +270,9 @@ function Credentials({ open }: { open: (credential: Credential) => void }) {
               <div>
                 <h3>{credential.title}</h3>
                 <p>{credential.issuer}</p>
+                {credential.period && (
+                  <p className="credential-period">{credential.period}</p>
+                )}
               </div>
               {credential.image && (
                 <button
@@ -255,30 +297,90 @@ export default function App() {
   );
   const [menuOpen, setMenuOpen] = useState(false);
   const [category, setCategory] = useState<Category>("All projects");
+  const [projectQuery, setProjectQuery] = useState("");
   const [showAll, setShowAll] = useState(false);
   const [overlay, setOverlay] = useState<Overlay | null>(null);
-  const [lab, setLab] = useState<"robotics" | "arabic">("robotics");
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">(
     "idle",
   );
   const menuButton = useRef<HTMLButtonElement>(null);
   const firstNavLink = useRef<HTMLAnchorElement>(null);
+  const searchInput = useRef<HTMLInputElement>(null);
+  const main = useRef<HTMLElement>(null);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const filtered =
-    category === "All projects"
-      ? projects
-      : projects.filter((project) => project.category === category);
-  const visibleProjects = showAll ? filtered : filtered.slice(0, 4);
+  const query = projectQuery.trim().toLowerCase();
+  const keywords = query ? query.split(/\s+/u) : [];
+  const filtered = projects.filter((project) => {
+    if (category !== "All projects" && project.category !== category) return false;
+    const searchable = [
+      project.title,
+      project.summary,
+      project.detail,
+      project.category,
+      ...project.tags,
+    ]
+      .join(" ")
+      .toLowerCase();
+    return keywords.every((word) => searchable.includes(word));
+  });
+  const visibleProjects =
+    showAll || query ? filtered : filtered.slice(0, selectedProjectCount);
+  const activeProject = overlay && "project" in overlay ? overlay.project : null;
+  const activeIndex = activeProject ? filtered.indexOf(activeProject) : -1;
+  const projectNavigation: ProjectNavigation | undefined =
+    activeIndex >= 0 && filtered.length > 1
+      ? {
+          position: activeIndex + 1,
+          count: filtered.length,
+          move: (direction) => {
+            const index =
+              (activeIndex + direction + filtered.length) % filtered.length;
+            setOverlay({ project: filtered[index] });
+          },
+        }
+      : undefined;
 
   useEffect(() => {
     if (menuOpen) firstNavLink.current?.focus();
   }, [menuOpen]);
 
   useEffect(() => {
-    const target = window.location.hash.slice(1);
+    let target = window.location.hash.slice(1);
+    if (target === "playground") {
+      target = "projects";
+      window.history.replaceState(window.history.state, "", "#projects");
+    }
     if (target) document.getElementById(target)?.scrollIntoView();
     return () => {
       if (copyTimer.current) clearTimeout(copyTimer.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    const content = main.current;
+    if (
+      !content ||
+      !("IntersectionObserver" in window) ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.12 },
+    );
+    content
+      .querySelectorAll(".reveal")
+      .forEach((element) => observer.observe(element));
+    content.classList.add("motion-ready");
+
+    return () => {
+      observer.disconnect();
+      content.classList.remove("motion-ready");
     };
   }, []);
 
@@ -356,6 +458,16 @@ export default function App() {
             </a>
           </nav>
           <div className="header-actions">
+            <a
+              href={linkedIn}
+              className="header-linkedin"
+              aria-label="LinkedIn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Linkedin size={18} aria-hidden="true" />
+              <span>LinkedIn</span>
+            </a>
             <button
               type="button"
               className="icon-button theme-button"
@@ -386,7 +498,7 @@ export default function App() {
         </div>
       </header>
 
-      <main id="main-content" tabIndex={-1}>
+      <main id="main-content" ref={main} tabIndex={-1}>
         <section className="shell hero" id="top" aria-labelledby="hero-title">
           <div className="hero-copy">
             <div className="hero-introduction">
@@ -409,8 +521,8 @@ export default function App() {
                 <a className="button primary" href="#projects">
                   Explore my work
                 </a>
-                <a className="button text-button" href="#playground">
-                  <Play size={17} fill="currentColor" /> Play with a project
+                <a className="button text-button" href="#contact">
+                  Get in touch <ArrowRight size={17} aria-hidden="true" />
                 </a>
               </div>
             </div>
@@ -449,7 +561,7 @@ export default function App() {
           id="about"
           aria-labelledby="about-title"
         >
-          <div className="about-intro">
+          <div className="about-intro reveal">
             <p className="section-label">The person behind the projects</p>
             <h2 id="about-title">
               Curious by nature.
@@ -529,7 +641,7 @@ export default function App() {
           id="projects"
           aria-labelledby="work-title"
         >
-          <div className="section-heading">
+          <div className="section-heading reveal">
             <div>
               <p className="section-label">Built to solve real problems</p>
               <h2 id="work-title">Ideas, put to work.</h2>
@@ -540,35 +652,86 @@ export default function App() {
               behind my experiments.
             </p>
           </div>
-          <div className="filters" role="group" aria-label="Filter projects">
-            {categories.map((filter) => (
+          <div className="project-tools">
+            <div className="filters" role="group" aria-label="Filter projects">
+              {categories.map((filter) => (
+                <button
+                  type="button"
+                  key={filter}
+                  aria-pressed={category === filter}
+                  onClick={() => {
+                    setCategory(filter);
+                    setShowAll(false);
+                  }}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
+            <div className="project-search" role="search" aria-label="Projects">
+              <Search size={19} aria-hidden="true" />
+              <input
+                ref={searchInput}
+                type="search"
+                value={projectQuery}
+                onChange={(event) => setProjectQuery(event.target.value)}
+                aria-label="Search projects"
+                placeholder="Search by project or skill"
+              />
+              {projectQuery && (
+                <button
+                  className="project-search-clear"
+                  type="button"
+                  aria-label="Clear project search"
+                  onClick={() => {
+                    setProjectQuery("");
+                    searchInput.current?.focus();
+                  }}
+                >
+                  <X size={17} aria-hidden="true" />
+                </button>
+              )}
+            </div>
+          </div>
+          <p
+            className={filtered.length ? "project-count" : "sr-only"}
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {visibleProjects.length < filtered.length
+              ? `Showing ${visibleProjects.length} of ${filtered.length} projects`
+              : `${filtered.length} ${filtered.length === 1 ? "project" : "projects"}`}
+          </p>
+          {visibleProjects.length ? (
+            <div className="project-grid" key={category}>
+              {visibleProjects.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  featured={project.id === "e3raab"}
+                  open={() => setOverlay({ project })}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="project-empty">
+              <h3>No matching projects</h3>
+              <p>Try a different skill or category.</p>
               <button
                 type="button"
-                key={filter}
-                aria-pressed={category === filter}
+                className="button secondary"
                 onClick={() => {
-                  setCategory(filter);
+                  setCategory("All projects");
+                  setProjectQuery("");
                   setShowAll(false);
+                  searchInput.current?.focus();
                 }}
               >
-                {filter}
+                Reset filters
               </button>
-            ))}
-          </div>
-          <p className="sr-only" aria-live="polite">
-            {filtered.length} projects. Showing {visibleProjects.length}.
-          </p>
-          <div className="project-grid" key={category}>
-            {visibleProjects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                featured={project.id === "e3raab"}
-                open={() => setOverlay({ project })}
-              />
-            ))}
-          </div>
-          {filtered.length > 4 && (
+            </div>
+          )}
+          {!query && filtered.length > selectedProjectCount && (
             <div className="more-work">
               <button
                 className="button secondary"
@@ -586,117 +749,18 @@ export default function App() {
         </section>
 
         <section
-          className="playground-section"
-          id="playground"
-          aria-labelledby="playground-title"
-        >
-          <div className="shell">
-            <div className="section-heading">
-              <div>
-                <p className="section-label">Your turn</p>
-                <h2 id="playground-title">
-                Test the ideas
-                  <br />
-                for yourself.
-                </h2>
-              </div>
-              <p className="section-description">
-                Get hands-on with the ideas
-                <br />
-                behind the projects.
-              </p>
-            </div>
-            <div
-              className="lab-tabs"
-              role="tablist"
-              aria-label="Choose a playground"
-            >
-              <button
-                type="button"
-                role="tab"
-                id="robotics-tab"
-                aria-selected={lab === "robotics"}
-                aria-controls="robotics-panel"
-                tabIndex={lab === "robotics" ? 0 : -1}
-                onClick={() => setLab("robotics")}
-                onKeyDown={(event) => {
-                  if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
-                    setLab("arabic");
-                    document.getElementById("arabic-tab")?.focus();
-                  }
-                }}
-              >
-                <Cpu size={20} /> Robot navigation
-              </button>
-              <button
-                type="button"
-                role="tab"
-                id="arabic-tab"
-                aria-selected={lab === "arabic"}
-                aria-controls="arabic-panel"
-                tabIndex={lab === "arabic" ? 0 : -1}
-                onClick={() => setLab("arabic")}
-                onKeyDown={(event) => {
-                  if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
-                    setLab("robotics");
-                    document.getElementById("robotics-tab")?.focus();
-                  }
-                }}
-              >
-                <span className="arabic-tab-icon" aria-hidden="true">
-                  ع
-                </span>{" "}
-                Arabic grammar
-              </button>
-            </div>
-            <div
-              role="tabpanel"
-              id="robotics-panel"
-              aria-labelledby="robotics-tab"
-              hidden={lab !== "robotics"}
-            >
-              {lab === "robotics" && <RoboticsPlayground />}
-            </div>
-            <div
-              role="tabpanel"
-              id="arabic-panel"
-              aria-labelledby="arabic-tab"
-              hidden={lab !== "arabic"}
-              className="arabic-lab"
-            >
-              <div className="arabic-lab-copy">
-                <span className="arabic-motif" lang="ar" aria-hidden="true">
-                  إعراب
-                </span>
-                <h3>
-                  A sentence.
-                  <br />A closer look.
-                </h3>
-                <p>
-                  Explore how Arabic words work together. Choose an example or
-                  enter a sentence, then select a word to see its role.
-                </p>
-              </div>
-              {lab === "arabic" && <ArabicAnalyzer />}
-            </div>
-          </div>
-        </section>
-
-        <section
           className="credentials-section"
           id="training"
           aria-labelledby="training-title"
         >
           <div className="shell section">
-            <div className="section-heading">
+            <div className="section-heading reveal">
               <div>
                 <p className="section-label">Always learning</p>
                 <h2 id="training-title">Practice. Learn. Repeat.</h2>
               </div>
               <p className="section-description">
-                Training in AI, machine learning,
-                <br />
-                and the tools that make it work.
+                Practical training in IT, AI, and machine learning.
               </p>
             </div>
             <Credentials open={(credential) => setOverlay({ credential })} />
@@ -709,7 +773,7 @@ export default function App() {
           aria-labelledby="contact-title"
         >
           <div className="shell contact-inner">
-            <div>
+            <div className="reveal">
               <p className="section-label">Have something in mind?</p>
               <h2 id="contact-title">
                 Let’s build
@@ -719,10 +783,23 @@ export default function App() {
             </div>
             <div className="contact-copy">
               <p>
-                Bring your problem, your idea, or your next experiment. For
-                freelance inquiries, message me through the platform where you
-                found my profile.
+                Get in touch about freelance work, collaborations, or a project
+                you’d like to build.
               </p>
+              <ul className="contact-links" aria-label="Contact details">
+                <li>
+                  <a href={`mailto:${email}`}>
+                    <Mail size={19} aria-hidden="true" />
+                    <span>{email}</span>
+                  </a>
+                </li>
+                <li>
+                  <a href={`tel:${phone}`}>
+                    <Phone size={19} aria-hidden="true" />
+                    <span>{phone}</span>
+                  </a>
+                </li>
+              </ul>
               <a className="button contact-button" href={github}>
                 <Github size={20} /> Explore my GitHub
               </a>
@@ -758,7 +835,11 @@ export default function App() {
         <a href="#top">Back to top</a>
       </footer>
       {overlay && (
-        <DetailDialog overlay={overlay} onClose={() => setOverlay(null)} />
+        <DetailDialog
+          overlay={overlay}
+          projectNavigation={projectNavigation}
+          onClose={() => setOverlay(null)}
+        />
       )}
     </>
   );
