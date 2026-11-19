@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Award,
+  BriefcaseBusiness,
   Check,
   Code2,
   Cpu,
@@ -23,6 +24,7 @@ import {
   age,
   categories,
   credentials,
+  experience,
   github,
   projects,
   skills,
@@ -34,6 +36,7 @@ import ProjectVisual from "./ProjectVisual";
 const navigation = [
   { label: "About", href: "#about" },
   { label: "Work", href: "#projects" },
+  { label: "Experience", href: "#experience" },
   { label: "Credentials", href: "#training" },
 ];
 const linkedIn = "https://www.linkedin.com/in/amr-mohamedd-/";
@@ -749,6 +752,34 @@ export default function App() {
         </section>
 
         <section
+          className="experience-section"
+          id="experience"
+          aria-labelledby="experience-title"
+        >
+          <div className="shell section">
+            <div className="section-heading reveal">
+              <h2 id="experience-title">Experience</h2>
+            </div>
+            <article className="experience-entry">
+              <div className="experience-role">
+                <span className="experience-icon" aria-hidden="true">
+                  <BriefcaseBusiness size={23} />
+                </span>
+                <div>
+                  <h3>{experience.title}</h3>
+                  <p>{experience.company}</p>
+                </div>
+              </div>
+              <ul className="experience-dates" aria-label="Training periods" role="list">
+                {experience.years.map((year) => (
+                  <li key={year}>Summer {year}</li>
+                ))}
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section
           className="credentials-section"
           id="training"
           aria-labelledby="training-title"
@@ -760,7 +791,7 @@ export default function App() {
                 <h2 id="training-title">Practice. Learn. Repeat.</h2>
               </div>
               <p className="section-description">
-                Practical training in IT, AI, and machine learning.
+                Certificates in AI, machine learning, and technical tools.
               </p>
             </div>
             <Credentials open={(credential) => setOverlay({ credential })} />

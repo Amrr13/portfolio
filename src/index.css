@@ -669,6 +669,61 @@ h2 {
   gap: 7px;
 }
 
+.experience-section {
+  border-top: 1px solid var(--line);
+}
+.experience-entry {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 22px 32px;
+  padding: clamp(18px, 3.5vw, 34px);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.experience-role {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  min-width: 0;
+}
+.experience-icon {
+  display: grid;
+  flex: 0 0 44px;
+  place-items: center;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--accent);
+}
+.experience-role h3 {
+  font: 650 clamp(1.65rem, 3.2vw, 2.35rem) / 1.06 var(--display);
+}
+.experience-role p {
+  margin-top: 6px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.experience-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.experience-dates li {
+  padding: 7px 12px;
+  border-radius: 6px;
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .credentials-section {
   border-block: 1px solid var(--line);
   background: var(--surface);
