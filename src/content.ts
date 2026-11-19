@@ -1,7 +1,7 @@
 export const github = 'https://github.com/Amrr13';
 export const age = 21;
 
-export const categories = ['All projects', 'Data Science & ML', 'Robotics', 'Hardware'] as const;
+export const categories = ['All projects', 'AI & ML', 'Robotics', 'Hardware'] as const;
 export type Category = (typeof categories)[number];
 
 export type Project = {
@@ -15,17 +15,9 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    id: 'diabetes',
-    title: 'Diabetes Risk Prediction',
-    category: 'Data Science & ML',
-    summary: 'An exploratory machine learning project using health data to estimate diabetes risk.',
-    detail: 'I analyzed health data and explored how machine learning could estimate diabetes risk from the available features. The project focused on data analysis and predictive modeling.',
-    tags: ['Data science', 'Predictive modeling', 'Machine learning'],
-  },
-  {
     id: 'e3raab',
     title: 'Arabic Grammar Analyzer',
-    category: 'Data Science & ML',
+    category: 'AI & ML',
     summary: 'An Arabic grammar analyzer that breaks a sentence down word by word.',
     detail: 'Built with a team at New Mansoura University, e3raab uses natural language processing to identify the grammatical roles of words in Arabic text, a practice known as iʿrāb.',
     tags: ['Arabic NLP', 'Machine learning'],
@@ -33,7 +25,7 @@ export const projects: Project[] = [
   {
     id: 'exam-detector',
     title: 'Online Exam Monitoring',
-    category: 'Data Science & ML',
+    category: 'AI & ML',
     summary: 'A machine learning project exploring signals for online exam review.',
     detail: 'The project explores behavioral patterns, keystroke dynamics, and facial recognition as inputs for flagging activity for review during online exams.',
     tags: ['Computer vision', 'Deep learning'],
@@ -53,6 +45,14 @@ export const projects: Project[] = [
     summary: 'A sensor-based filtration prototype that monitors water quality.',
     detail: 'The system reads water quality in real time and uses those readings to control the direction of water flow.',
     tags: ['IoT', 'Sensors', 'Automation'],
+  },
+  {
+    id: 'diabetes',
+    title: 'Diabetes Risk Prediction',
+    category: 'AI & ML',
+    summary: 'A machine learning project exploring risk prediction from health data.',
+    detail: 'I used health data to explore how machine learning can estimate diabetes risk. This was a data analysis and modeling project.',
+    tags: ['Machine learning', 'Data analysis'],
   },
   {
     id: 'vacuum',
@@ -90,19 +90,19 @@ export const projects: Project[] = [
 
 export const skills = [
   {
-    title: 'Data science & ML',
+    title: 'AI & data',
     items: [
-      'Data analysis',
       'Machine learning',
-      'Mathematical modeling',
       'Deep learning',
       'Computer vision',
       'NLP (Arabic & English)',
       'Agentic AI',
       'RAG systems',
+      'Data analysis',
+      'Mathematical modeling',
     ],
   },
-  { title: 'Programming & tools', items: ['Python', 'SQL', 'PyTorch', 'Keras', 'Git', 'GitHub', 'C++', 'HTML', 'CSS'] },
+  { title: 'Programming & tools', items: ['Python', 'C++', 'HTML', 'CSS', 'Git', 'GitHub', 'SQL', 'PyTorch', 'Keras'] },
   { title: 'Robotics & collaboration', items: ['LEGO Mindstorms EV3', 'IoT', 'Sensors', 'Automation', 'Team supervision', 'Project management'] },
 ];
 

@@ -1,6 +1,6 @@
 # Amr Mohamed Taher’s portfolio
 
-A React and Vite portfolio focused on data science and machine learning, with projects in Arabic NLP, computer vision, and robotics.
+A React and Vite portfolio covering AI engineering, Arabic NLP, and robotics.
 
 ## Develop locally
 

@@ -45,10 +45,10 @@ const phone = "+201023462890";
 const selectedProjectCount = 4;
 const featuredSkills = [
   "Machine learning",
-  "Data analysis",
   "Deep learning",
   "Computer vision",
   "NLP (Arabic & English)",
+  "Data analysis",
   "Agentic AI",
   "RAG systems",
   "Robotics",
@@ -508,12 +508,17 @@ export default function App() {
               <span className="hero-line"></span>Amr Mohamed Taher
             </div>
             <h1 id="hero-title">
-              Data science &amp; machine learning<span>.</span>
+              I build
+              <br />
+              intelligent
+              <br />
+              systems<span>.</span>
             </h1>
             <div className="hero-description">
               <p>
-                I build predictive models and language tools. I also program
-                robots and build sensor-based prototypes.
+                AI engineer & robotics builder.
+                <br /> Turning language, data, and sensors into things you can
+                actually use.
               </p>
               <div className="hero-actions">
                 <a className="button primary" href="#projects">
@@ -560,41 +565,45 @@ export default function App() {
           aria-labelledby="about-title"
         >
           <div className="about-intro reveal">
-            <h2 id="about-title">About me</h2>
+            <p className="section-label">The person behind the projects</p>
+            <h2 id="about-title">
+              Curious by nature.
+              <br />
+              Engineer by practice.
+            </h2>
           </div>
           <div className="about-grid">
             <div className="about-story">
               <p>
-                I’m Amr Mohamed Taher, a data science and machine learning
-                engineer based in Egypt.
+                I’m Amr Mohamed Taher, an AI engineer and robotics team
+                supervisor based in Egypt.
               </p>
               <p>
-                I help product and research teams explore data and build models
-                they can test. I’ve used health data to explore diabetes risk
-                prediction and co-developed e3raab, a tool that shows learners
-                the grammatical role of each word in an Arabic sentence.
+                I help product and research teams build prototypes they can
+                test, from Arabic language tools to sensor-based automation. I
+                like seeing how a prototype behaves with real inputs. I built an
+                irrigation system that waters plants based on soil moisture and
+                co-developed e3raab, which shows learners how each word
+                functions in an Arabic sentence.
               </p>
               <p>
-                My toolkit includes Python, SQL, PyTorch, and Keras. I completed
-                the DEPI Microsoft Machine Learning Engineer track and scored
-                98% in the NTI/Huawei AI track.
-              </p>
-              <p>
-                I got my start programming EV3 robots. My team placed first in
-                the project category at Egypt’s FIRST LEGO League, and I’ve
+                I started by programming EV3 robots. My team placed first in the
+                project category at Egypt’s FIRST LEGO League, and I’ve
                 supervised the SCH Club robotics team at New Mansoura University
-                since November 2024. I enjoy testing how prototypes behave
-                with real inputs.
+                since November 2024. I scored 99% in NTI’s machine learning
+                training and 98% in the NTI/Huawei AI track.
               </p>
               <p>
+                I work with Python, C++, and Git on projects in machine
+                learning, deep learning, Arabic NLP, and robotics.{" "}
                 <a href="#contact">Get in touch to discuss your project.</a>
               </p>
             </div>
             <aside className="about-aside">
               <div className="achievement">
-                <Award size={26} aria-hidden="true" />
-                <strong>99%</strong>
-                <span>NTI machine learning training score</span>
+                <Award size={26} />
+                <strong>1st place</strong>
+                <span>Project category, Egypt’s FIRST LEGO League</span>
               </div>
               <div className="education" id="education">
                 <GraduationCap size={24} />
@@ -669,11 +678,13 @@ export default function App() {
         >
           <div className="section-heading reveal">
             <div>
-              <h2 id="work-title">Selected projects</h2>
+              <p className="section-label">Built to solve real problems</p>
+              <h2 id="work-title">Ideas, put to work.</h2>
             </div>
             <p className="section-description">
-              Predictive modeling, Arabic NLP, and computer vision, alongside
-              robotics and hardware prototypes.
+              Explore the software and hardware
+              <br />
+              behind my experiments.
             </p>
           </div>
           <div className="project-tools">
@@ -732,7 +743,7 @@ export default function App() {
                 <ProjectCard
                   key={project.id}
                   project={project}
-                  featured={project.id === "diabetes"}
+                  featured={project.id === "e3raab"}
                   open={() => setOverlay({ project })}
                 />
               ))}
@@ -807,8 +818,8 @@ export default function App() {
             </div>
             <div className="contact-copy">
               <p>
-                Get in touch about data analysis, machine learning, or a
-                robotics project you’d like to build.
+                Get in touch about freelance work, collaborations, or a project
+                you’d like to build.
               </p>
               <ul className="contact-links" aria-label="Contact details">
                 <li>

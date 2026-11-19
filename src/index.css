@@ -290,10 +290,9 @@ h2 {
   background: var(--accent);
 }
 .hero h1 {
-  font: 750 clamp(4.4rem, 8.4vw, 7.5rem) / 0.88 var(--display);
+  font: 750 clamp(5rem, 9.1vw, 8.8rem) / 0.82 var(--display);
   text-transform: uppercase;
   letter-spacing: -0.025em;
-  text-wrap: balance;
 }
 .hero h1 > span {
   color: var(--orange);
@@ -306,6 +305,9 @@ h2 {
   line-height: 1.6;
   max-width: 44ch;
   font-size: 1.06rem;
+}
+.hero-description p::first-line {
+  color: var(--ink);
 }
 .hero-actions {
   display: flex;
@@ -1148,7 +1150,7 @@ body:has(dialog[open]) {
     gap: 0 35px;
   }
   .hero h1 {
-    font-size: clamp(4.3rem, 8.4vw, 6.6rem);
+    font-size: clamp(4.8rem, 9.2vw, 7rem);
   }
   .hero-actions {
     gap: 3px;
@@ -1218,13 +1220,16 @@ body:has(dialog[open]) {
     margin-bottom: 19px;
   }
   .hero h1 {
-    font-size: 8.5vw;
+    font-size: 10.2vw;
   }
   .hero-description {
     padding-top: 21px;
   }
   .hero-description p {
     font-size: 0.96rem;
+  }
+  .hero-description p br {
+    display: none;
   }
   .hero-profile {
     padding-top: 0;
@@ -1331,7 +1336,8 @@ body:has(dialog[open]) {
     font-size: 0.94rem;
   }
   .hero h1 {
-    font-size: clamp(3.4rem, 14vw, 5.1rem);
+    font-size: clamp(3.6rem, 19.3vw, 7rem);
+    line-height: 0.85;
   }
   .hero-description {
     padding-block: 22px 27px;
