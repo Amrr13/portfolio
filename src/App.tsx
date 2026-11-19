@@ -35,8 +35,8 @@ import ProjectVisual from "./ProjectVisual";
 
 const navigation = [
   { label: "About", href: "#about" },
-  { label: "Work", href: "#projects" },
   { label: "Experience", href: "#experience" },
+  { label: "Work", href: "#projects" },
   { label: "Credentials", href: "#training" },
 ];
 const linkedIn = "https://www.linkedin.com/in/amr-mohamedd-/";
@@ -640,6 +640,38 @@ export default function App() {
         </section>
 
         <section
+          className="experience-section"
+          id="experience"
+          aria-labelledby="experience-title"
+        >
+          <div className="shell section">
+            <div className="section-heading reveal">
+              <h2 id="experience-title">Experience</h2>
+            </div>
+            <div className="experience-list">
+              {experience.map(({ company, title, periods }) => (
+                <article className="experience-entry" key={company}>
+                  <div className="experience-role">
+                    <span className="experience-icon" aria-hidden="true">
+                      <BriefcaseBusiness size={23} />
+                    </span>
+                    <div>
+                      <h3>{title ?? company}</h3>
+                      {title && <p>{company}</p>}
+                    </div>
+                  </div>
+                  <ul className="experience-dates" aria-label="Dates" role="list">
+                    {periods.map((period) => (
+                      <li key={period}>{period}</li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section
           className="shell section work"
           id="projects"
           aria-labelledby="work-title"
@@ -749,34 +781,6 @@ export default function App() {
               </button>
             </div>
           )}
-        </section>
-
-        <section
-          className="experience-section"
-          id="experience"
-          aria-labelledby="experience-title"
-        >
-          <div className="shell section">
-            <div className="section-heading reveal">
-              <h2 id="experience-title">Experience</h2>
-            </div>
-            <article className="experience-entry">
-              <div className="experience-role">
-                <span className="experience-icon" aria-hidden="true">
-                  <BriefcaseBusiness size={23} />
-                </span>
-                <div>
-                  <h3>{experience.title}</h3>
-                  <p>{experience.company}</p>
-                </div>
-              </div>
-              <ul className="experience-dates" aria-label="Training periods" role="list">
-                {experience.years.map((year) => (
-                  <li key={year}>Summer {year}</li>
-                ))}
-              </ul>
-            </article>
-          </div>
         </section>
 
         <section

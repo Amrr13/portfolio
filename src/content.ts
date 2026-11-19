@@ -106,11 +106,23 @@ export const skills = [
   { title: 'Robotics & collaboration', items: ['LEGO Mindstorms EV3', 'IoT', 'Sensors', 'Automation', 'Team supervision', 'Project management'] },
 ];
 
-export const experience = {
-  title: 'IT Department Summer Training',
-  company: 'Gulf Agency Company (GAC)',
-  years: [2023, 2024, 2025, 2026],
+type Experience = {
+  company: string;
+  title?: string;
+  periods: string[];
 };
+
+export const experience: Experience[] = [
+  {
+    company: 'Gulf Agency Company (GAC)',
+    title: 'IT Department Summer Training',
+    periods: ['Summer 2023', 'Summer 2024', 'Summer 2025', 'Summer 2026'],
+  },
+  {
+    company: 'Alexandria Mineral Oils Company (AMOC)',
+    periods: ['16–27 August 2026'],
+  },
+];
 
 export type Credential = {
   title: string;
