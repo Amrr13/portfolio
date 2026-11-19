@@ -1,5 +1,5 @@
 import { analyzeBasicArabic } from '../src/lib/arabic-grammar.js';
-import { analyzeArabic, arabicLetter } from '../src/lib/arabic-parser.js';
+import { analyzeWithGemini, arabicWords } from '../src/lib/arabic-gemini.js';
 
 const maxTextLength = 800;
 const maxBodyLength = 8192;
@@ -41,19 +41,20 @@ export default {
     if (text.length > maxTextLength) {
       return json({ error: `Enter up to ${maxTextLength} characters.` }, 400);
     }
-    if (!arabicLetter.test(text)) {
+    const words = arabicWords(text);
+    if (words.length === 0) {
       return json({ error: 'Enter an Arabic sentence to analyze.' }, 400);
+    }
+
+    const key = process.env.GEMINI_API_KEY?.trim();
+    if (key) {
+      const result = await analyzeWithGemini(text, words, key, request.signal);
+      if (result.analysis) return json({ analysis: result.analysis, mode: 'contextual' });
+      if (!request.signal.aborted) console.warn('Gemini Arabic analysis failed', result.failure, result.status);
     }
 
     const basicAnalysis = analyzeBasicArabic(text);
     if (basicAnalysis) return json({ analysis: basicAnalysis, mode: 'basic' });
-
-    try {
-      const analysis = await analyzeArabic(text, request.signal);
-      return json({ analysis, mode: 'estimated' });
-    } catch (error) {
-      if (!request.signal.aborted) console.error('Arabic parser failed:', error.code ?? error.name);
-      return json({ error: 'The analyzer is temporarily unavailable. Please try again.' }, 503);
-    }
+    return json({ error: 'Full analysis is temporarily unavailable. Please try again later.' }, 503);
   },
 };

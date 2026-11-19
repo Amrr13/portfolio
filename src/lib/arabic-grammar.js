@@ -72,6 +72,7 @@ for (const [past, present, transitive, allowsInanimate = false] of [
   const verb = { transitive, allowsInanimate };
   registerVerb(past, verb, 'past', 'masculine');
   registerVerb(`${past}ت`, verb, 'past', 'feminine');
+  registerVerb(past === 'نام' ? 'نمت' : `${past}ت`, verb, 'past', 'first');
   registerVerb(present, verb, 'present', 'masculine');
   registerVerb(`ت${stem}`, verb, 'present', 'feminine');
   registerVerb(past === 'أكل' ? 'آكل' : `أ${stem}`, verb, 'present', 'first');
@@ -138,12 +139,17 @@ function prepositionalPhrase(words, predicate) {
     const prefixMarks = token.word.slice(1).match(/^[\u064B-\u0652]+/u)?.[0];
     const prefixVowel = match[1] === 'كال' ? 'َ' : 'ِ';
     if (prefixMarks && prefixMarks !== prefixVowel) return null;
-    const complement = { ...token, plain: `ال${match[2]}` };
+    let nounSpelling = match[2];
+    const correctedSpelling = nounSpelling.endsWith('ه') ? nounSpelling.slice(0, -1) + 'ة' : '';
+    const spellingCorrection = !nouns.has(nounSpelling) && nouns.has(correctedSpelling);
+    if (spellingCorrection) nounSpelling = correctedSpelling;
+    const complement = { ...token, plain: `ال${nounSpelling}` };
     const noun = nounFor(complement, 'preposition');
     const nounAnalysis = noun && nounRow(complement, noun, 'preposition');
     if (!nounAnalysis) return null;
     const particle = { لل: 'اللام', بال: 'الباء', كال: 'الكاف' }[match[1]];
-    const explanation = `${particle} حرف جر، و«${complement.plain}» ${nounAnalysis.explanation}`;
+    const correction = spellingCorrection ? ` الكتابة الصحيحة «${match[1]}${nounSpelling}» بالتاء المربوطة.` : '';
+    const explanation = `${particle} حرف جر، و«${complement.plain}» ${nounAnalysis.explanation}${correction}`;
     return [row(token, predicate ? `${explanation} وشبه الجملة في محل رفع خبر.` : explanation)];
   }
   if (words.length !== 2) return null;
@@ -166,10 +172,15 @@ function verbalPhrase(words, verb, person, explicitSubject) {
   if (verb.tense === 'present' && verbToken.ending && verbToken.ending !== 'ُ') return null;
   if (verb.tense === 'past' && verb.person === 'masculine' && verbToken.ending && verbToken.ending !== 'َ') return null;
   if (verb.tense === 'past' && verb.person === 'feminine' && verbToken.ending) return null;
+  const hasSubjectSuffix = verb.tense === 'past' && verb.person === 'first';
+  const precedingVowel = verbToken.word.match(/([\u064B-\u0652])تُ$/u)?.[1];
+  if (hasSubjectSuffix && (verbToken.ending !== 'ُ' || (precedingVowel && precedingVowel !== 'ْ'))) return null;
 
-  const verbExplanation = verb.tense === 'present'
-    ? 'فعل مضارع مرفوع وعلامة رفعه الضمة الظاهرة على آخره.'
-    : 'فعل ماضٍ مبني على الفتح.';
+  const verbExplanation = hasSubjectSuffix
+    ? 'فعل ماضٍ مبني على السكون لاتصاله بتاء الفاعل، والتاء ضمير متصل مبني على الضم في محل رفع فاعل.'
+    : verb.tense === 'present'
+      ? 'فعل مضارع مرفوع وعلامة رفعه الضمة الظاهرة على آخره.'
+      : 'فعل ماضٍ مبني على الفتح.';
   const feminineMarker = verb.tense === 'past' && verb.person === 'feminine'
     ? ' والتاء للتأنيث، حرف مبني لا محل له من الإعراب.'
     : '';
@@ -180,7 +191,7 @@ function verbalPhrase(words, verb, person, explicitSubject) {
     masculine: 'هو',
     feminine: 'هي',
   };
-  const rows = [row(verbToken, verbExplanation + feminineMarker + (explicitSubject ? '' : ` والفاعل ضمير مستتر تقديره «${implicit[person]}».`))];
+  const rows = [row(verbToken, verbExplanation + feminineMarker + (explicitSubject || hasSubjectSuffix ? '' : ` والفاعل ضمير مستتر تقديره «${implicit[person]}».`))];
   if (!rest.length) return rows;
 
   const phrase = prepositionalPhrase(rest, false);

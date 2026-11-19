@@ -10,4 +10,14 @@ A React and Vite portfolio covering AI engineering, Arabic NLP, and robotics.
 
 Project descriptions, categories, profile age, and credentials are in `src/content.ts`. Certificate images and the profile photo are in `public/`.
 
-The Arabic analyzer uses grammar rules for simple constructions and a bundled UDPipe model to estimate the roles of words in other Modern Standard Arabic sentences. The function analyzes submitted text on the portfolio server and requires no external credentials. Use Vercel's development server on x64 Windows or Linux to test the server function locally. See the [parser and model credits](vendor/udpipe/README.md) for training and license details.
+## Arabic analyzer
+
+Create a [Gemini API key](https://aistudio.google.com/apikey) and add it as the
+server-side `GEMINI_API_KEY` in the [Vercel project environment variables](https://vercel.com/amrr13s-projects/portfolio-do2n/settings/environment-variables).
+Select Production and redeploy. Store local development credentials in an ignored
+`.env.local` file and use Vercel's development server to run the function locally.
+
+The server sends the submitted sentence to Gemini 3.5 Flash-Lite and validates
+its structured response against the original words. If the provider is unavailable,
+the demo returns a rule-based result for supported simple sentences. Other
+sentences receive an availability message.

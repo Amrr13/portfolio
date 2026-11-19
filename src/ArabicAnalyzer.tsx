@@ -65,17 +65,7 @@ const examples = [
 }));
 
 type Word = { word: string; explanation: string; role?: string };
-type Result = { words: Word[]; mode: "sample" | "basic" | "estimated" };
-
-function normalize(text: string) {
-  return text
-    .normalize("NFC")
-    .replace(/[\p{M}ـ]/gu, "")
-    .trim()
-    .replace(/[.!?؟]+$/, "")
-    .trim()
-    .replace(/\s+/g, " ");
-}
+type Result = { words: Word[]; mode: "sample" | "basic" | "contextual" };
 
 function isAnalysis(value: unknown): value is Word[] {
   return (
@@ -130,14 +120,6 @@ export default function ArabicAnalyzer() {
       return;
     }
 
-    const example = examples.find(
-      (item) => normalize(item.text) === normalize(sentence),
-    );
-    if (example) {
-      showExample(example);
-      return;
-    }
-
     const controller = new AbortController();
     request.current = controller;
     setResult(null);
@@ -150,7 +132,7 @@ export default function ArabicAnalyzer() {
         body: JSON.stringify({ text: sentence }),
         signal: controller.signal,
       });
-      const { analysis, mode } = await response.json();
+      const { analysis, error, mode } = await response.json();
       if (controller.signal.aborted) return;
       if (
         response.status === 429 ||
@@ -158,7 +140,9 @@ export default function ArabicAnalyzer() {
         response.status === 504
       ) {
         setMessage(
-          "The analyzer is busy. Wait a moment, then try your sentence again.",
+          typeof error === "string"
+            ? error
+            : "The analyzer is busy. Please try again shortly.",
         );
         return;
       }
@@ -166,7 +150,7 @@ export default function ArabicAnalyzer() {
       if (!isAnalysis(analysis)) throw new Error("No analysis returned");
       setResult({
         words: analysis,
-        mode: mode === "basic" ? "basic" : "estimated",
+        mode: mode === "basic" ? "basic" : "contextual",
       });
     } catch {
       if (!controller.signal.aborted) {
@@ -200,7 +184,8 @@ export default function ArabicAnalyzer() {
         />
         <p className="analyzer-input-hint" id={hintId}>
           Enter a sentence or short passage in Modern Standard Arabic, up to{" "}
-          {maxLength} characters.
+          {maxLength} characters. Google may process submitted text. Leave out
+          private details.
         </p>
         <button
           className="button primary"
@@ -246,7 +231,7 @@ export default function ArabicAnalyzer() {
       {result && selected && (
         <>
           <p className="example-hint">
-            {result.mode === "estimated" && <strong>Estimated analysis. </strong>}
+            {result.mode === "basic" && <strong>Basic analysis. </strong>}
             Select a word to see its grammatical role.
           </p>
           <div className="example-words" lang="ar" dir="rtl">
